@@ -33,28 +33,23 @@ class Client {
         return total_survices;
     }
     public void setId(int id) {
-        validateId(id);
-        this.id = id;
+        this.id = validateId(id);
     }
     
     public void setName(String name) {
-        validateName(name);
-        this.name = name;
+        this.name = validateName(name);
     }
 
     public void setSurname(String surname) {
-        validateSurname(surname);
-        this.surname = surname;
+        this.surname = validateSurname(surname);
     }
 
     public void setPatronymic(String patronymic) {
-        validatePatronymic(patronymic);
-        this.patronymic = patronymic;
+        this.patronymic = validatePatronymic(patronymic);
     }
 
     public void setSurvices(int total_survices) {
-        validateSurvices(total_survices);
-        this.total_survices = total_survices;
+        this.total_survices = validateSurvices(total_survices);
     }
 
     public static int validateId(int id) {
