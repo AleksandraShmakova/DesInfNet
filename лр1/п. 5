@@ -1,0 +1,84 @@
+class Client {
+    private int id;
+    private String name;
+    private String surname;
+    private String patronymic;
+    private int total_survices;
+
+    public Client(int id, String name, String surname, String patronymic, int total_survices) {
+        this.setId(id);
+        this.setName(name);
+        this.setSurname(surname);
+        this.setPatronymic(patronymic);
+        this.setSurvices(total_survices);
+    }
+
+    //Геттеры
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public String getPatronymic() {
+        return patronymic;
+    }
+
+    public int getSurvices() {
+        return total_survices;
+    }
+
+    //Сеттеры
+    public void setId(int id) {
+        this.id = validateI(id, "ID должен быть положительным числом.");
+    }
+
+    public void setName(String name) {
+        this.name = validateS(name, "Имя не может быть пустым.");
+    }
+
+    public void setSurname(String surname) {
+        this.surname = validateS(surname, "Фамилия не может быть пустой.");
+    }
+
+    public void setPatronymic(String patronymic) {
+        this.patronymic = validateS(patronymic, "Отчество не может быть пустым.");
+    }
+
+    public void setSurvices(int total_survices) {
+        this.total_survices = validateI(total_survices, "Количество услуг не может быть отрицательным.");
+    }
+
+    public static String validateS(String value, String ex) {
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalArgumentException(ex);
+        }
+        else
+            return value;
+    }
+
+    public static int validateI(int val, String ex) {
+        if (val <= 0) {
+            throw new IllegalArgumentException(ex);
+        }
+        else
+            return val;
+    }
+
+    @Override
+    public String toString() {
+        return "Client{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", patronymic='" + patronymic + '\'' +
+                ", total_services='" + total_survices + '\'' +
+                '}';
+    }
+}
