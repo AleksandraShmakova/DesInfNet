@@ -13,6 +13,55 @@ class Client {
         this.setSurvices(total_survices);
     }
 
+public Client (String clientData) {
+        // В формате: "id,name,surname,patronymic,total_services"
+        String[] data = clientData.split(",");
+        if (data.length != 5) {
+            throw new IllegalArgumentException("Неверный формат данных.");
+        }
+
+        this.setId(Integer.parseInt(data[0].trim()));
+        this.setName(data[1].trim());
+        this.setSurname(data[2].trim());
+        this.setPatronymic(data[3].trim());
+        this.setSurvices(Integer.parseInt(data[4].trim()));
+    }
+
+    public Client(String json, boolean isJSON) {
+        if (!isJSON) {
+            throw new IllegalArgumentException("Для строки используйте другой конструктор.");
+        }
+
+        json = json.trim().replaceAll("[{}\"]", "");
+        String[] keyValuePairs = json.split(",");
+
+        for (String pair : keyValuePairs) {
+            String[] keyValue = pair.split(":");
+            String key = keyValue[0].trim();
+            String value = keyValue[1].trim();
+
+            switch (key) {
+                case "id":
+                    this.setId(Integer.parseInt(value));
+                    break;
+                case "name":
+                    this.setName(value);
+                    break;
+                case "surname":
+                    this.setSurname(value);
+                    break;
+                case "patronymic":
+                    this.setPatronymic(value);
+                    break;
+                case "total_survices":
+                    this.setSurvices(Integer.parseInt(value));
+                    break;
+                default:
+                    throw new IllegalArgumentException("Неизвестное поле: " + key);
+            }
+        }
+    }
+
     //Геттеры
     public int getId() {
         return id;
