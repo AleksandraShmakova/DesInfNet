@@ -149,3 +149,33 @@ public Client (String clientData) {
                 patronymic.equals(client.patronymic);
     }
 }
+
+
+class ClientShort {
+    private String surname;
+    private String initials;
+
+    public ClientShort(Client client) {
+        this.surname = client.getSurname();
+        this.initials = getInitials(client.getName(), client.getPatronymic());
+    }
+    private String getInitials(String name, String patronymic) {
+        return name.charAt(0) + "." + patronymic.charAt(0) + ".";
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public String getInitials() {
+        return initials;
+    }
+
+    @Override
+    public String toString() {
+        return "ClientShort{" +
+                "surname='" + surname + '\'' +
+                ", initials='" + initials + '\'' +
+                '}';
+    }
+}
