@@ -5,24 +5,24 @@ class Client {
     private String patronymic;
     private int total_survices;
 
-    public Client(int id, String name, String surname, String patronymic, int total_survices) {
+    public Client(int id, String surname, String name, String patronymic, int total_survices) {
         this.setId(id);
-        this.setName(name);
         this.setSurname(surname);
+        this.setName(name);
         this.setPatronymic(patronymic);
         this.setSurvices(total_survices);
     }
 
 public Client (String clientData) {
-        // В формате: "id,name,surname,patronymic,total_services"
+        // В формате: "id,surname,name,patronymic,total_services"
         String[] data = clientData.split(",");
         if (data.length != 5) {
             throw new IllegalArgumentException("Неверный формат данных.");
         }
 
         this.setId(Integer.parseInt(data[0].trim()));
-        this.setName(data[1].trim());
-        this.setSurname(data[2].trim());
+        this.setSurname(data[1].trim());
+        this.setName(data[2].trim());
         this.setPatronymic(data[3].trim());
         this.setSurvices(Integer.parseInt(data[4].trim()));
     }
@@ -44,11 +44,11 @@ public Client (String clientData) {
                 case "id":
                     this.setId(Integer.parseInt(value));
                     break;
-                case "name":
-                    this.setName(value);
-                    break;
                 case "surname":
                     this.setSurname(value);
+                    break;
+                case "name":
+                    this.setName(value);
                     break;
                 case "patronymic":
                     this.setPatronymic(value);
@@ -67,12 +67,12 @@ public Client (String clientData) {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public String getSurname() {
         return surname;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getPatronymic() {
@@ -88,12 +88,12 @@ public Client (String clientData) {
         this.id = validateI(id, "ID должен быть положительным числом.");
     }
 
-    public void setName(String name) {
-        this.name = validateS(name, "Имя не может быть пустым.");
-    }
-
     public void setSurname(String surname) {
         this.surname = validateS(surname, "Фамилия не может быть пустой.");
+    }
+
+    public void setName(String name) {
+        this.name = validateS(name, "Имя не может быть пустым.");
     }
 
     public void setPatronymic(String patronymic) {
@@ -124,8 +124,8 @@ public Client (String clientData) {
     public String toString() {
         return "Client{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
+                ", name='" + name + '\'' +
                 ", patronymic='" + patronymic + '\'' +
                 ", total_services='" + total_survices + '\'' +
                 '}';
@@ -133,8 +133,8 @@ public Client (String clientData) {
 
     public String toShortString() {
         return "Client{" +
-                "name = " + name + '\'' +
                 ", surname = " + surname + '\'' +
+                "name = " + name + '\'' +
                 '}';
     }
 
@@ -153,7 +153,7 @@ public Client (String clientData) {
 
 class ClientShort extends Client {
     public ClientShort(Client client) {
-        super(client.getId(), client.getName(), client.getSurname(), client.getPatronymic(), client.getSurvices());
+        super(client.getId(), client.getSurname(), client.getName(), client.getPatronymic(), client.getSurvices());
     }
 
     public String getInitials() {
