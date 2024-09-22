@@ -130,4 +130,22 @@ public Client (String clientData) {
                 ", total_services='" + total_survices + '\'' +
                 '}';
     }
+
+    public String toShortString() {
+        return "Client{" +
+                "name = " + name + '\'' +
+                ", surname = " + surname + '\'' +
+                '}';
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;  // Сравнение ссылок
+        if (o == null || getClass() != o.getClass()) return false;  // Проверка на null и тип
+        Client client = (Client) o;  // Приведение типов
+        return id == client.id &&
+                total_survices == client.total_survices &&
+                name.equals(client.name) &&
+                surname.equals(client.surname) &&
+                patronymic.equals(client.patronymic);
+    }
 }
