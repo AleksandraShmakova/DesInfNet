@@ -151,31 +151,20 @@ public Client (String clientData) {
 }
 
 
-class ClientShort {
-    private String surname;
-    private String initials;
-
+class ClientShort extends Client {
     public ClientShort(Client client) {
-        this.surname = client.getSurname();
-        this.initials = getInitials(client.getName(), client.getPatronymic());
-    }
-    private String getInitials(String name, String patronymic) {
-        return name.charAt(0) + "." + patronymic.charAt(0) + ".";
-    }
-
-    public String getSurname() {
-        return surname;
+        super(client.getId(), client.getName(), client.getSurname(), client.getPatronymic(), client.getSurvices());
     }
 
     public String getInitials() {
-        return initials;
+        return getName().charAt(0) + "." + getPatronymic().charAt(0) + ".";
     }
 
     @Override
     public String toString() {
         return "ClientShort{" +
-                "surname='" + surname + '\'' +
-                ", initials='" + initials + '\'' +
+                "surname='" + getSurname() + '\'' +
+                ", initials='" + getInitials() + '\'' +
                 '}';
     }
 }
