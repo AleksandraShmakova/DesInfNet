@@ -154,4 +154,30 @@ class Client extends ClientShort {
         Client client = (Client) o; 
         return getPhone() == client.getPhone();
     }
+
+    public static Client fromJson(JSONObject jsonObject) throws Exception {
+        return new Client(
+                jsonObject.optInt("id"),
+                jsonObject.getString("name"),
+                jsonObject.getString("surname"),
+                jsonObject.getString("patronymic"),
+                jsonObject.optInt("total_services"),
+                jsonObject.getString("phone"),
+                jsonObject.getString("email"),
+                jsonObject.getString("gender")
+        );
+    }
+
+    public JSONObject toJson() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", this.getId());
+        jsonObject.put("name", this.getName());
+        jsonObject.put("surname", this.getSurname());
+        jsonObject.put("patronymic", this.getPatronymic());
+        jsonObject.put("total_services", this.getServices());
+        jsonObject.put("phone", this.getPhone());
+        jsonObject.put("email", this.getEmail());
+        jsonObject.put("gender", this.getGender());
+        return jsonObject;
+    }
 }
