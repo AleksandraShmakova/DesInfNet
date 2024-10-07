@@ -71,7 +71,7 @@ class ClientShort {
     }
 
     public static boolean validateI(int val) {
-        if (val <= 0)
+        if (val < 0)
             return false;
         else
             return true;
