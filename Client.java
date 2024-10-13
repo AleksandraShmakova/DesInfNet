@@ -187,4 +187,30 @@ class Client extends ClientShort {
         jsonObject.put("gender", this.getGender());
         return jsonObject;
     }
+
+    public static Client fromYaml(Map<String, Object> map) {
+        int id = (int) map.get("id");
+        String name = (String) map.get("name");
+        String surname = (String) map.get("surname");
+        String patronymic = (String) map.get("patronymic");
+        Integer total_services = (Integer) map.get("total_services");
+        String phone = (String) map.get("phone");
+        String email = (String) map.get("email");
+        String gender = (String) map.get("gender");
+
+        return new Client(id, name, surname, patronymic, total_services, phone, email, gender);
+    }
+
+    public Map<String, Object> toYaml() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", this.getId());
+        map.put("name", this.getName());
+        map.put("surname", this.getSurname());
+        map.put("patronymic", this.getPatronymic());
+        map.put("total_services", this.getServices());
+        map.put("phone", this.getPhone());
+        map.put("email", this.getEmail());
+        map.put("gender", this.getGender());
+        return map;
+    }
 }
