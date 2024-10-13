@@ -15,10 +15,8 @@ class ClientShort {
         this.setPhone(phone);
     }
     public ClientShort(Integer id, String surname, String name, String phone) {
+        this(surname, name, phone);
         this.setId(id);
-        this.setSurname(surname);
-        this.setName(name);
-        this.setPhone(phone);
     }
 
     public Integer getId() {
