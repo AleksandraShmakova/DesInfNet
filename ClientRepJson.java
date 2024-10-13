@@ -13,7 +13,7 @@ class ClientRepJson {
 
         if (!file.exists() || file.length() == 0) {
             System.out.println("Файл не существует или пуст: " + filename);
-            return clients;
+            return clients; // Возвращаем пустой список
         }
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -31,7 +31,7 @@ class ClientRepJson {
                 try {
                     clients.add(Client.fromJson(jsonObject));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    e.printStackTrace(); 
                 }
             }
         } catch (FileNotFoundException e) {
@@ -49,7 +49,7 @@ class ClientRepJson {
             jsonArray.put(client.toJson());
         }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
-            writer.write(jsonArray.toString(4));
+            writer.write(jsonArray.toString(4)); // Отступ в 4 пробела
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -86,7 +86,7 @@ class ClientRepJson {
     public void addClient(String name, String surname, String patronymic, String phone, String email, String gender) throws Exception {
         addClient(name, surname, patronymic, 0, phone, email, gender); // Присваиваем 0 по умолчанию
     }
-    
+    // Добавление объекта (формируется новый ID)
     public void addClient(String name, String surname, String patronymic, Integer total_services, String phone, String email, String gender) throws Exception {
         int newId = clients.stream().mapToInt(Client::getId).max().orElse(0) + 1;
         if (!isUnique(phone)) {
@@ -97,10 +97,21 @@ class ClientRepJson {
         saveAll();
     }
 
-    public boolean replaceById(int clientId, Client newClient) {
+    public boolean replaceById(int clientId, Client newClient) throws Exception {
         for (int i = 0; i < clients.size(); i++) {
             if (clients.get(i).getId() == clientId) {
-                clients.set(i, newClient);
+                if (!isUnique(newClient.getPhone())) {
+                    throw new Exception("Нельзя заменить клиента: клиент с таким телефоном уже существует!");
+                }
+                Client client;
+                if(newClient.getId() == null  && newClient.getServices() == null) {
+                    client = new Client(clientId, newClient.getName(), newClient.getSurname(), newClient.getPatronymic(), clients.get(i).getServices(), newClient.getPhone(), newClient.getEmail(), newClient.getGender());
+                }
+                else if (newClient.getId() == null) {
+                    client = new Client(clientId, newClient.getName(), newClient.getSurname(), newClient.getPatronymic(), newClient.getServices(), newClient.getPhone(), newClient.getEmail(), newClient.getGender());
+                }
+                else client = newClient;
+                clients.set(i, client);
                 saveAll();
                 return true;
             }
