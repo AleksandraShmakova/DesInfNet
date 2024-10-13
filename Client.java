@@ -8,15 +8,19 @@ class Client extends ClientShort {
     public Client(String surname, String name, String patronymic, String phone, String email, String gender) {
         super(surname,name,phone);
         this.setPatronymic(patronymic);
+        this.setServices(0);
         this.setEmail(email);
         this.setGender(gender);
     }
-    public Client(Integer id, String surname, String name, String patronymic, Integer total_services, String phone, String email, String gender) {
-        super(id, surname, name, phone);
-        this.setPatronymic(patronymic);
+
+    public Client(String surname, String name, String patronymic, Integer total_services, String phone, String email, String gender) {
+        this(surname,name, patronymic, phone, email, gender);
         this.setServices(total_services);
-        this.setEmail(email);
-        this.setGender(gender);
+    }
+
+    public Client(Integer id, String surname, String name, String patronymic, Integer total_services, String phone, String email, String gender) {
+        this(surname,name, patronymic, total_services, phone, email, gender);
+        this.setId(id);
     }
 
     // Перегруженный конструктор, принимающий строку
@@ -67,7 +71,7 @@ class Client extends ClientShort {
         return patronymic;
     }
 
-    public int getServices() {
+    public Integer getServices() {
         return total_services;
     }
 
@@ -108,16 +112,19 @@ class Client extends ClientShort {
             return false;
         }
 
+        // Email должен содержать один символ '@'
         int atIndex = email.indexOf('@');
         if (atIndex <= 0 || atIndex != email.lastIndexOf('@')) {
             return false;
         }
 
+        // Проверка, что есть домен после '@'
         String domain = email.substring(atIndex + 1);
         if (domain.isEmpty() || !domain.contains(".")) {
             return false;
         }
 
+        // Проверка, что домен содержит хотя бы одну точку и доменная часть после последней точки
         String topLevelDomain = domain.substring(domain.lastIndexOf('.') + 1);
         if (topLevelDomain.length() < 2) {
             return false;
@@ -149,19 +156,19 @@ class Client extends ClientShort {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true; 
-        if (o == null || getClass() != o.getClass()) return false;
-        Client client = (Client) o; 
+        if (this == o) return true;  // Сравнение ссылок
+        if (o == null || getClass() != o.getClass()) return false;  // Проверка на null и тип
+        Client client = (Client) o;  // Приведение типов
         return getPhone() == client.getPhone();
     }
 
     public static Client fromJson(JSONObject jsonObject) throws Exception {
         return new Client(
-                jsonObject.optInt("id"),
+                jsonObject.optInt("id"), // Или jsonObject.optInt, если может быть null
                 jsonObject.getString("name"),
                 jsonObject.getString("surname"),
                 jsonObject.getString("patronymic"),
-                jsonObject.optInt("total_services"),
+                jsonObject.optInt("total_services", 0),    // Если total_services может быть null
                 jsonObject.getString("phone"),
                 jsonObject.getString("email"),
                 jsonObject.getString("gender")
