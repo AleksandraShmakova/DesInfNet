@@ -1,15 +1,16 @@
-class ClientRepYaml extends ClientRep{
-    public ClientRepYaml(String filename) {
-        super(filename);
+class YamlClientStrategy implements ClientStrategy {
+    private String filename;
+
+    public YamlClientStrategy(String filename) {
+        this.filename = filename;
     }
-    @Override
     public List<Client> readAll() {
         List<Client> clients = new ArrayList<>();
         File file = new File(filename);
 
         if (!file.exists() || file.length() == 0) {
             System.out.println("Файл не существует или пуст: " + filename);
-            return clients; // Возвращаем пустой список
+            return clients;
         }
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -25,23 +26,20 @@ class ClientRepYaml extends ClientRep{
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
         for (Client client : clients) {
             System.out.println(client.toYaml());
         }
         return clients;
     }
-
-
-    @Override
-    protected void saveAll() {
+    public void saveAll(List<Client> clients) {
         DumperOptions options = new DumperOptions();
         options.setIndent(4);
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         options.setPrettyFlow(true);
 
         Representer representer = new Representer(options);
-        representer.addClassTag(Client.class, Tag.MAP); 
+        representer.addClassTag(Client.class, Tag.MAP);
 
         Yaml yaml = new Yaml(representer, options);
 
