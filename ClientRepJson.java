@@ -1,17 +1,17 @@
-class ClientRepJson extends ClientRep{
+class JsonClientStrategy implements ClientStrategy {
+    private String filename;
 
-    public ClientRepJson(String filename) {
-        super(filename);
+    public JsonClientStrategy(String filename) {
+        this.filename = filename;
     }
 
-    @Override
     public List<Client> readAll() {
         List<Client> clients = new ArrayList<>();
         File file = new File(filename);
-        
+
         if (!file.exists() || file.length() == 0) {
             System.out.println("Файл не существует или пуст: " + filename);
-            return clients; // Возвращаем пустой список
+            return clients;
         }
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -40,14 +40,13 @@ class ClientRepJson extends ClientRep{
         return clients;
     }
 
-    @Override
-    protected void saveAll() {
+    public void saveAll(List<Client> clients) {
         JSONArray jsonArray = new JSONArray();
         for (Client client : clients) {
             jsonArray.put(client.toJson());
         }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
-            writer.write(jsonArray.toString(4)); // Отступ в 4 пробела
+            writer.write(jsonArray.toString(4));
         } catch (IOException e) {
             e.printStackTrace();
         }
