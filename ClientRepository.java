@@ -1,15 +1,25 @@
-abstract class ClientRep {
+class ClientRepository {
     protected String filename;
     protected List<Client> clients;
+    private ClientStrategy strategy;
 
-    public ClientRep(String filename) {
+    public ClientRepository(String filename, ClientStrategy strategy) {
         this.filename = filename;
-        this.clients = readAll();
+        this.setStrategy(strategy);
+        this.clients = readAllClients();
     }
 
-    public abstract List<Client> readAll();
+    public void setStrategy(ClientStrategy strategy) {
+        this.strategy = strategy;
+    }
 
-    protected abstract void saveAll();
+    public void saveAllClients() {
+        strategy.saveAll(clients);
+    }
+
+    public List<Client> readAllClients() {
+        return strategy.readAll();
+    }
 
     public Client getById(int clientId) {
         for (Client client : clients) {
@@ -50,7 +60,7 @@ abstract class ClientRep {
         }
         Client newClient = new Client(newId, name, surname, patronymic, total_services, phone, email, gender);
         clients.add(newClient);
-        saveAll();
+        saveAllClients();
     }
 
     public boolean replaceById(int clientId, Client newClient) throws Exception {
@@ -60,7 +70,7 @@ abstract class ClientRep {
                     throw new Exception("Нельзя заменить клиента: клиент с таким телефоном уже существует!");
                 }
                 clients.set(i, newClient);
-                saveAll();
+                saveAllClients();
                 return true;
             }
         }
@@ -71,7 +81,7 @@ abstract class ClientRep {
         clients = clients.stream()
                 .filter(customer -> customer.getId() != clientId)
                 .collect(Collectors.toList());
-        saveAll();
+        saveAllClients();
     }
 
     public int getCount() {
