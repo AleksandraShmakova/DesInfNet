@@ -1,19 +1,15 @@
 class ClientRepDB {
-    private final DatabaseConnection db;
-    private final String TABLE_NAME = "clients";
+    private DatabaseConnection db;
 
-    public ClientRepDB(DatabaseConnection db) {
-        this.db = db;
-    }
-
-    private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(db.getUrl(), db.getUser(), db.getPassword());
+    public ClientRepDB(String dbName, String user, String password, String host, String port) {
+        this.db = DatabaseConnection.getInstance(dbName, user, password, host, port);
     }
 
     public Client getById(int clientId) {
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        Client client = null;
+        String query = "SELECT * FROM clients WHERE id = ?";
+        try (Connection conn = db.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, clientId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -36,8 +32,8 @@ class ClientRepDB {
 
     public List<Client> getKNSortList(int k, int n) {
         List<Client> clients = new ArrayList<>();
-        String sql = "SELECT * FROM " + TABLE_NAME + " ORDER BY id OFFSET ? LIMIT ?";
-        try (Connection conn = getConnection();
+        String sql = "SELECT * FROM clients ORDER BY id OFFSET ? LIMIT ?";
+        try (Connection conn = db.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, (k - 1) * n);
             stmt.setInt(2, n);
@@ -65,8 +61,8 @@ class ClientRepDB {
             throw new SQLException("Клиент с таким телефоном уже существует!");
         }
 
-        String sql = "INSERT INTO " + TABLE_NAME + " (name, surname, patronymic, total_services, phone, email, gender) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id";
-        try (Connection conn = getConnection();
+        String sql = "INSERT INTO clients (name, surname, patronymic, total_services, phone, email, gender) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id";
+        try (Connection conn = db.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, client.getName());
             stmt.setString(2, client.getSurname());
@@ -88,8 +84,8 @@ class ClientRepDB {
             throw new SQLException("Нельзя заменить клиента: клиент с таким телефоном уже существует!");
         }
 
-        String sql = "UPDATE " + TABLE_NAME + " SET name = ?, surname = ?, patronymic = ?, total_services = ?, phone = ?, email = ?, gender = ? WHERE id = ?";
-        try (Connection conn = getConnection();
+        String sql = "UPDATE clients SET name = ?, surname = ?, patronymic = ?, total_services = ?, phone = ?, email = ?, gender = ? WHERE id = ?";
+        try (Connection conn = db.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, newClient.getName());
             stmt.setString(2, newClient.getSurname());
@@ -104,8 +100,8 @@ class ClientRepDB {
     }
 
     public void deleteById(int clientId) {
-        String sql = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
-        try (Connection conn = getConnection();
+        String sql = "DELETE FROM clients WHERE id = ?";
+        try (Connection conn = db.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, clientId);
             stmt.executeUpdate();
@@ -115,8 +111,8 @@ class ClientRepDB {
     }
 
     public int getCount() {
-        String sql = "SELECT COUNT(*) FROM " + TABLE_NAME;
-        try (Connection conn = getConnection();
+        String sql = "SELECT COUNT(*) FROM clients";
+        try (Connection conn = db.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -129,8 +125,8 @@ class ClientRepDB {
     }
 
     private boolean isUnique(String phone) {
-        String sql = "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE phone = ?";
-        try (Connection conn = getConnection();
+        String sql = "SELECT COUNT(*) FROM clients WHERE phone = ?";
+        try (Connection conn = db.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, phone);
             ResultSet rs = stmt.executeQuery();
