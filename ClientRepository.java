@@ -1,4 +1,4 @@
-class ClientRepository {
+class ClientRepository implements IClientRep{
     protected String filename;
     protected List<Client> clients;
     private ClientStrategy strategy;
@@ -49,16 +49,12 @@ class ClientRepository {
         return true;
     }
 
-    public void addClient(String name, String surname, String patronymic, String phone, String email, String gender) throws Exception {
-        addClient(name, surname, patronymic, 0, phone, email, gender); // Присваиваем 0 по умолчанию
-    }
-
-    public void addClient(String name, String surname, String patronymic, Integer total_services, String phone, String email, String gender) throws Exception {
+    public void addClient(Client client) throws Exception {
         int newId = clients.stream().mapToInt(Client::getId).max().orElse(0) + 1;
-        if (!isUnique(phone)) {
+        if (!isUnique(client.getPhone())) {
             throw new Exception("Клиент с таким телефоном уже существует!");
         }
-        Client newClient = new Client(newId, name, surname, patronymic, total_services, phone, email, gender);
+        Client newClient = new Client(newId, client.getName(), client.getSurname(), client.getPatronymic(), client.getServices(), client.getPhone(), client.getEmail(), client.getGender());
         clients.add(newClient);
         saveAllClients();
     }
