@@ -15,9 +15,14 @@ class DatabaseConnection {
         this.host = host;
         this.port = port;
 
+        connect();  // Устанавливаем соединение при создании объекта
+    }
+
+    private void connect() {
         try {
             String url = String.format("jdbc:postgresql://%s:%s/%s", host, port, dbName);
             connection = DriverManager.getConnection(url, user, password);
+            System.out.println("Соединение установлено.");
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Ошибка подключения к базе данных");
@@ -32,6 +37,14 @@ class DatabaseConnection {
     }
 
     public Connection getConnection() {
+        try {
+            if (connection == null || connection.isClosed()) {
+                System.out.println("Соединение закрыто или отсутствует. Пытаюсь подключиться снова...");
+                connect();  // Повторное подключение при необходимости
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return connection;
     }
 }
