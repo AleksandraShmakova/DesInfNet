@@ -36,7 +36,7 @@ class DatabaseConnection {
         return instance;
     }
 
-    public Connection getConnection() {
+    protected Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {
                 System.out.println("Соединение закрыто или отсутствует. Пытаюсь подключиться снова...");
