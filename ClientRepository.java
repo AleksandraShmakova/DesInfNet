@@ -1,4 +1,4 @@
-class ClientRepository implements IClientRep{
+class ClientRepository {
     protected String filename;
     protected List<Client> clients;
     private ClientStrategy strategy;
@@ -56,7 +56,6 @@ class ClientRepository implements IClientRep{
         }
         Client newClient = new Client(newId, client.getName(), client.getSurname(), client.getPatronymic(), client.getServices(), client.getPhone(), client.getEmail(), client.getGender());
         clients.add(newClient);
-        saveAllClients();
     }
 
     public boolean replaceById(int clientId, Client newClient) throws Exception {
@@ -66,7 +65,6 @@ class ClientRepository implements IClientRep{
                     throw new Exception("Нельзя заменить клиента: клиент с таким телефоном уже существует!");
                 }
                 clients.set(i, newClient);
-                saveAllClients();
                 return true;
             }
         }
@@ -77,7 +75,6 @@ class ClientRepository implements IClientRep{
         clients = clients.stream()
                 .filter(customer -> customer.getId() != clientId)
                 .collect(Collectors.toList());
-        saveAllClients();
     }
 
     public int getCount() {
