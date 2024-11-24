@@ -1,5 +1,7 @@
-class ClientRepDB {
+class ClientRepDB implements IClientRepository{
     private DatabaseConnection db;
+    private List<ClientObserver> observers = new ArrayList<>();
+    private List<Client> clients = new ArrayList<>();
 
     public ClientRepDB(String dbName, String user, String password, String host, String port) {
         this.db = DatabaseConnection.getInstance(dbName, user, password, host, port);
@@ -67,10 +69,11 @@ class ClientRepDB {
             stmt.setString(1, client.getName());
             stmt.setString(2, client.getSurname());
             stmt.setString(3, client.getPatronymic());
-            stmt.setObject(4, client.getServices(), Types.INTEGER); // Используем setObject для обработки null
+            stmt.setObject(4, client.getServices(), Types.INTEGER);
             stmt.setString(5, client.getPhone());
             stmt.setString(6, client.getEmail());
             stmt.setString(7, client.getGender());
+
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 int generatedId = rs.getInt("id");
@@ -137,5 +140,24 @@ class ClientRepDB {
             e.printStackTrace();
         }
         return false;
+    }
+
+    @Override
+    public void addObserver(ClientObserver observer) {
+        if (!observers.contains(observer)) {
+            observers.add(observer);
+        }
+    }
+
+    @Override
+    public void removeObserver(ClientObserver observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (ClientObserver observer : observers) {
+            observer.update(getKNSortList(1, getCount()));
+        }
     }
 }
