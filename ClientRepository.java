@@ -64,7 +64,8 @@ class ClientRepository {
                 if (!isUnique(newClient.getPhone())) {
                     throw new Exception("Нельзя заменить клиента: клиент с таким телефоном уже существует!");
                 }
-                clients.set(i, newClient);
+                Client updatedClient = new Client(clientId, newClient.getSurname(), newClient.getName(), newClient.getPatronymic(), newClient.getServices(), newClient.getPhone(), newClient.getEmail(), newClient.getGender());
+                clients.set(i, updatedClient);
                 return true;
             }
         }
