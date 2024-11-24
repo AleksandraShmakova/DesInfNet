@@ -72,6 +72,29 @@ class ClientRepository {
         return false;
     }
 
+    public boolean updateClient(int clientId, Client newClient) throws Exception {
+        for (int i = 0; i < clients.size(); i++) {
+            if (clients.get(i).getId() == clientId) {
+                Client existingClient = clients.get(i);
+
+                Client updatedClient = new Client(
+                        clientId,
+                        newClient.getSurname(),
+                        newClient.getName(),
+                        newClient.getPatronymic(),
+                        newClient.getServices(),
+                        existingClient.getPhone(), // Сохраняем старый телефон
+                        newClient.getEmail(),
+                        newClient.getGender()
+                );
+
+                clients.set(i, updatedClient);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void deleteById(int clientId) {
         clients = clients.stream()
                 .filter(customer -> customer.getId() != clientId)
