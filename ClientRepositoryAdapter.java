@@ -1,6 +1,6 @@
-class ClientRepositoryAdapter {
+class ClientRepositoryAdapter implements IClientRepository {
+    private List<ClientObserver> observers = new ArrayList<>();
     private ClientRepository clientRepository;
-
 
     public ClientRepositoryAdapter(String filename, ClientStrategy strategy) {
         this.clientRepository = new ClientRepository(filename, strategy);
@@ -35,5 +35,24 @@ class ClientRepositoryAdapter {
 
     public int getCount() {
         return clientRepository.getCount();
+    }
+
+    @Override
+    public void addObserver(ClientObserver observer) {
+        if (!observers.contains(observer)) {
+            observers.add(observer);
+        }
+    }
+
+    @Override
+    public void removeObserver(ClientObserver observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (ClientObserver observer : observers) {
+            observer.update(clientRepository.readAllClients());
+        }
     }
 }
