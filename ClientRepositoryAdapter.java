@@ -28,6 +28,15 @@ class ClientRepositoryAdapter implements IClientRepository {
         return false;
     }
 
+    public boolean updateClient(int clientId, Client newClient) throws Exception {
+        boolean flag = clientRepository.updateClient(clientId, newClient);
+        if(flag) {
+            clientRepository.saveAllClients();
+            return true;
+        }
+        return false;
+    }
+
     public void deleteById(int clientId) {
         clientRepository.deleteById(clientId);
         clientRepository.saveAllClients();
