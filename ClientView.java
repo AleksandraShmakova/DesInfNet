@@ -4,13 +4,6 @@ class ClientView extends JFrame {
     private JButton deleteButton;
     private JButton updateButton;
     private JButton refreshButton;
-    private JTextField nameField;
-    private JTextField surnameField;
-    private JTextField patronymicField;
-    private JTextField phoneField;
-    private JTextField emailField;
-    private JTextField genderField;
-    private JTextField totalServicesField;
 
 
     public ClientView() {
@@ -40,27 +33,6 @@ class ClientView extends JFrame {
         controlPanel.add(buttonPanel);
 
         add(controlPanel, BorderLayout.SOUTH);
-    }
-
-    public Client getClientInput() {
-        String name = nameField.getText();
-        String surname = surnameField.getText();
-        String patronymic = patronymicField.getText();
-        String phone = phoneField.getText();
-        String email = emailField.getText();
-        String gender = genderField.getText();
-
-        int totalServices = 0;
-        try {
-            String totalServicesText = totalServicesField.getText().trim();
-            if (!totalServicesText.isEmpty()) {
-                totalServices = Integer.parseInt(totalServicesText);
-            }
-        } catch (NumberFormatException e) {
-            totalServices = 0;
-        }
-
-        return new Client(0, name, surname, patronymic, totalServices, phone, email, gender);
     }
 
     public int getSelectedClientId() {
