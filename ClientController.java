@@ -14,8 +14,7 @@ class ClientController implements ClientObserver {
 
     public void setupActions() {
         view.setAddButtonListener(e -> {
-            Client newClient = view.getClientInput();
-            addClient(newClient);
+            new AddClientController(clientRep, this);
         });
 
         view.setDeleteButtonListener(e -> {
@@ -28,8 +27,14 @@ class ClientController implements ClientObserver {
         view.setUpdateButtonListener(e -> {
             int clientId = view.getSelectedClientId();
             if (clientId != -1) {
-                Client updatedClient = view.getClientInput();
-                replaceClient(clientId, updatedClient);
+                Client client = clientRep.getById(clientId);
+                if (client != null) {
+                    new EditClientController(clientRep, this, client);
+                } else {
+                    view.showError("Клиент не найден!");
+                }
+            } else {
+                view.showError("Выберите клиента для редактирования.");
             }
         });
 
@@ -56,14 +61,14 @@ class ClientController implements ClientObserver {
         clientRep.deleteById(clientId);
     }
 
-    public void replaceClient(int clientId, Client newClient) {
+    public void updateClient(int clientId, Client newClient) {
         try {
-            boolean success = clientRep.replaceById(clientId, newClient);
+            boolean success = clientRep.updateClient(clientId, newClient);
             if (!success) {
-                view.showError("Ошибка при замене клиента: клиент не найден.");
+                view.showError("Ошибка при обновлении клиента: клиент не найден.");
             }
         } catch (Exception e) {
-            view.showError("Ошибка при замене клиента: " + e.getMessage());
+            view.showError("Ошибка при обновлении клиента: " + e.getMessage());
         }
     }
     public void refreshClientList() {
