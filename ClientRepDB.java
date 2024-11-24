@@ -102,6 +102,26 @@ class ClientRepDB implements IClientRepository{
         }
     }
 
+    public boolean updateClient(int clientId, Client newClient) throws SQLException {
+        // SQL-запрос, исключающий обновление телефона
+        String sql = "UPDATE clients SET name = ?, surname = ?, patronymic = ?, total_services = ?, email = ?, gender = ? WHERE id = ?";
+
+        try (Connection conn = db.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, newClient.getName());
+            stmt.setString(2, newClient.getSurname());
+            stmt.setString(3, newClient.getPatronymic());
+            stmt.setObject(4, newClient.getServices(), Types.INTEGER); // Используем setObject для обработки null
+            stmt.setString(5, newClient.getEmail());
+            stmt.setString(6, newClient.getGender());
+            stmt.setInt(7, clientId);
+
+            // Выполняем запрос
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
     public void deleteById(int clientId) {
         String sql = "DELETE FROM clients WHERE id = ?";
         try (Connection conn = db.getConnection();
