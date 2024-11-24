@@ -15,7 +15,7 @@ class ClientView extends JFrame {
 
     public ClientView() {
         setTitle("Client Management");
-        setSize(1000, 800);
+        setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -25,38 +25,6 @@ class ClientView extends JFrame {
 
         JPanel controlPanel = new JPanel();
         controlPanel.setLayout(new GridLayout(2, 1));
-
-        JPanel inputPanel = new JPanel(new GridLayout(8, 2));
-        inputPanel.add(new JLabel("Фамилия:"));
-        surnameField = new JTextField();
-        inputPanel.add(surnameField);
-
-        inputPanel.add(new JLabel("Имя:"));
-        nameField = new JTextField();
-        inputPanel.add(nameField);
-
-        inputPanel.add(new JLabel("Отчество:"));
-        patronymicField = new JTextField();
-        inputPanel.add(patronymicField);
-
-        inputPanel.add(new JLabel("Количество стрижек:"));
-        totalServicesField = new JTextField();
-        inputPanel.add(totalServicesField);
-
-        inputPanel.add(new JLabel("Телефон:"));
-        phoneField = new JTextField();
-        inputPanel.add(phoneField);
-
-        inputPanel.add(new JLabel("Email:"));
-        emailField = new JTextField();
-        inputPanel.add(emailField);
-
-        inputPanel.add(new JLabel("Пол:"));
-        genderField = new JTextField();
-        inputPanel.add(genderField);
-
-
-        controlPanel.add(inputPanel);
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
         addButton = new JButton("Добавить");
@@ -89,7 +57,6 @@ class ClientView extends JFrame {
                 totalServices = Integer.parseInt(totalServicesText);
             }
         } catch (NumberFormatException e) {
-            // Если введено некорректное значение, оставляем 0
             totalServices = 0;
         }
 
@@ -120,7 +87,6 @@ class ClientView extends JFrame {
         refreshButton.addActionListener(listener);
     }
 
-    // Обновление представления с данными клиентов
     public void update(List<Client> clients) {
         String[] columnNames = {"ID", "Фамилия", "Имя", "Отчество","Количество стрижек", "Телефон", "Email", "Пол"};
         Object[][] data = new Object[clients.size()][columnNames.length];
