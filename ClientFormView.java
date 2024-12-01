@@ -1,3 +1,6 @@
+import javax.swing.*;
+import java.awt.*;
+
 class ClientFormView extends JFrame {
     private JTextField nameField;
     private JTextField surnameField;
@@ -8,8 +11,11 @@ class ClientFormView extends JFrame {
     private JTextField totalServicesField;
     private JButton confirmButton;
     private JButton cancelButton;
+    
+    private AddClientController addController;
 
-    public ClientFormView(String title, String confirmButtonText) {
+    public ClientFormView(String title, String confirmButtonText, AddClientController addController) {
+        this.addController = addController;
         setTitle(title);
         setSize(400, 300);
         setLayout(new GridLayout(9, 2));
@@ -47,22 +53,9 @@ class ClientFormView extends JFrame {
         cancelButton = new JButton("Отмена");
         add(confirmButton);
         add(cancelButton);
-    }
 
-    public void setClientData(Client client) {
-        if (client != null) {
-            nameField.setText(client.getName());
-            surnameField.setText(client.getSurname());
-            patronymicField.setText(client.getPatronymic());
-            phoneField.setText(client.getPhone());
-            emailField.setText(client.getEmail());
-            genderField.setText(client.getGender());
-            totalServicesField.setText(String.valueOf(client.getServices()));
-        }
-    }
-
-    public void setPhoneFieldEditable(boolean editable) {
-        phoneField.setEditable(editable); // Делаем поле доступным или недоступным для редактирования
+        confirmButton.addActionListener(e -> addController.onConfirmButtonClick());
+        cancelButton.addActionListener(e -> addController.onCancelButtonClick());
     }
 
     public Client getClientInput() {
@@ -79,14 +72,6 @@ class ClientFormView extends JFrame {
         } catch (NumberFormatException ignored) {}
 
         return new Client(0, name, surname, patronymic, totalServices, phone, email, gender);
-    }
-
-    public void setConfirmButtonListener(ActionListener listener) {
-        confirmButton.addActionListener(listener);
-    }
-
-    public void setCancelButtonListener(ActionListener listener) {
-        cancelButton.addActionListener(listener);
     }
 
     public void showError(String message) {
