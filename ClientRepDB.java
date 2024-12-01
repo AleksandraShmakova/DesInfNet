@@ -1,7 +1,10 @@
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
 class ClientRepDB implements IClientRepository{
     private DatabaseConnection db;
     private List<ClientObserver> observers = new ArrayList<>();
-    private List<Client> clients = new ArrayList<>();
 
     public ClientRepDB(String dbName, String user, String password, String host, String port) {
         this.db = DatabaseConnection.getInstance(dbName, user, password, host, port);
@@ -79,6 +82,7 @@ class ClientRepDB implements IClientRepository{
                 int generatedId = rs.getInt("id");
                 System.out.println("Клиент добавлен с ID: " + generatedId);
             }
+            notifyObservers();
         }
     }
 
@@ -109,6 +113,7 @@ class ClientRepDB implements IClientRepository{
         try (Connection conn = db.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            // Устанавливаем параметры запроса
             stmt.setString(1, newClient.getName());
             stmt.setString(2, newClient.getSurname());
             stmt.setString(3, newClient.getPatronymic());
@@ -117,10 +122,12 @@ class ClientRepDB implements IClientRepository{
             stmt.setString(6, newClient.getGender());
             stmt.setInt(7, clientId);
 
+            notifyObservers();
             // Выполняем запрос
             return stmt.executeUpdate() > 0;
         }
     }
+
 
     public void deleteById(int clientId) {
         String sql = "DELETE FROM clients WHERE id = ?";
@@ -128,6 +135,7 @@ class ClientRepDB implements IClientRepository{
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, clientId);
             stmt.executeUpdate();
+            notifyObservers();
         } catch (SQLException e) {
             e.printStackTrace();
         }
