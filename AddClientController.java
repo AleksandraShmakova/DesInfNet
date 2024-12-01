@@ -3,33 +3,31 @@ class AddClientController {
     private ClientFormView formView;
     private ClientObserver mainController;
 
-    public AddClientController(IClientRepository clientRepository, ClientObserver mainController) {
+    public AddClientController(IClientRepository clientRepository, ClientController mainController) {
         this.clientRepository = clientRepository;
-        this.formView = new ClientFormView("Добавить клиента", "Добавить");
+        this.formView = new ClientFormView("Добавить клиента", "Добавить", this);
         this.mainController = mainController;
 
-        setupActions();
         formView.setVisible(true);
     }
 
-    private void setupActions() {
-        formView.setConfirmButtonListener(e -> {
-            Client clientInput = formView.getClientInput();
-
-            if (isValidClient(clientInput)) {
-                try {
-                    clientRepository.addClient(clientInput);
-                    mainController.update(clientRepository.getKNSortList(1, clientRepository.getCount()));
-                    formView.dispose();
-                } catch (Exception ex) {
-                    formView.showError("Ошибка при добавлении клиента: " + ex.getMessage());
-                }
-            } else {
-                formView.showError("Некорректные данные клиента!");
+    public void onConfirmButtonClick() {
+        Client clientInput = formView.getClientInput();
+        if (isValidClient(clientInput)) {
+            try {
+                clientRepository.addClient(clientInput);
+                mainController.update(clientRepository.getKNSortList(1, clientRepository.getCount()));
+                formView.dispose();
+            } catch (Exception ex) {
+                formView.showError("Ошибка при добавлении клиента: " + ex.getMessage());
             }
-        });
+        } else {
+            formView.showError("Некорректные данные клиента!");
+        }
+    }
 
-        formView.setCancelButtonListener(e -> formView.dispose());
+    public void onCancelButtonClick() {
+        formView.dispose();
     }
 
     private boolean isValidClient(Client client) {
