@@ -4,6 +4,8 @@ import java.util.List;
 class ClientController implements ClientObserver {
     private IClientRepository clientRep;
     private ClientView view;
+    private int currentPage = 1;
+    private final int recordsPerPage = 10;
 
     public ClientController(IClientRepository clientRep) {
         this.clientRep = clientRep;
@@ -12,78 +14,95 @@ class ClientController implements ClientObserver {
 
     public void setView(ClientView view) {
         this.view = view; // Устанавливаем представление после его создания
-        update(clientRep.getKNSortList(1, clientRep.getCount()));
+        update();
     }
 
     public void onAddButtonClick() {
         new AddClientController(clientRep);
     }
 
-    public void onDeleteButtonClick() {
-        JTable clientTable = view.getClientTable();
-        int selectedRow = clientTable.getSelectedRow();
-        int clientId = (Integer) clientTable.getValueAt(selectedRow, 0);
-        if (clientId != -1) {
-            deleteClient(clientId);
-        } else {
-            view.showError("Выберите клиента для удаления.");
+    public void onDeleteButtonClick(String phone, JFrame infoWindow) {
+        try {
+            List<Client> clients = clientRep.getKNSortList(1, clientRep.getCount());
+            for (Client client : clients) {
+                if (client.getPhone().equals(phone)) {
+                    int clientId = client.getId();
+                    deleteClient(clientId);
+                    infoWindow.dispose();
+                }
+            }
+        } catch (Exception e) {
+            view.showError("Ошибка при удалении клиента: " + e.getMessage());
         }
     }
 
-    public void onUpdateButtonClick() {
+    public void onMoreInfoButtonClick() {
         JTable clientTable = view.getClientTable();
         int selectedRow = clientTable.getSelectedRow();
         if (selectedRow != -1) {
             try {
-                Object idObj = clientTable.getValueAt(selectedRow, 0);
-                Object servicesObj = clientTable.getValueAt(selectedRow, 4);
-
-                if (idObj == null || servicesObj == null) {
-                    view.showError("Ошибка: Пустое значение в обязательном поле (ID или количество стрижек).");
-                    return;
+                String phone = (String) clientTable.getValueAt(selectedRow, 3);
+                List<Client> clients = clientRep.getKNSortList(1, clientRep.getCount());
+                for (Client client : clients) {
+                    if (client.getPhone().equals(phone)) {
+                        view.openInfoWindow(client);
+                    }
                 }
-
-                int clientId = Integer.parseInt(idObj.toString());
-                int services = Integer.parseInt(servicesObj.toString());
-
-                String surname = (String) clientTable.getValueAt(selectedRow, 1);
-                String name = (String) clientTable.getValueAt(selectedRow, 2);
-                String patronymic = (String) clientTable.getValueAt(selectedRow, 3);
-                String phone = (String) clientTable.getValueAt(selectedRow, 5);
-                String email = (String) clientTable.getValueAt(selectedRow, 6);
-                String gender = (String) clientTable.getValueAt(selectedRow, 7);
-
-                Client updatedClient = new Client(clientId, surname, name, patronymic, services, phone, email, gender);
-
-                boolean success = clientRep.updateClient(clientId, updatedClient);
-                if (!success) {
-                    view.showError("Ошибка при обновлении клиента с ID: " + clientId);
-                }
-
-            } catch (NumberFormatException e) {
-                view.showError("Ошибка при преобразовании данных. Пожалуйста, убедитесь, что все числовые поля заполнены корректно.");
-                e.printStackTrace(); // Выводим стек вызовов для диагностики
             } catch (Exception e) {
-                view.showError("Ошибка при обновлении клиента: " + e.getMessage());
-                e.printStackTrace();
+                view.showError("Ошибка при нахождении клиента: " + e.getMessage());
             }
-
         } else {
-            view.showError("Выберите клиента для обновления.");
+            view.showError("Выберите клиента для просмотра информации.");
         }
     }
 
+    public void onUpdateButtonClick(Client updatedClient, JFrame infoWindow) {
+        try {
+            List<Client> clients = clientRep.getKNSortList(1, clientRep.getCount());
+            for (Client client : clients) {
+                if (client.getPhone().equals(updatedClient.getPhone())) {
+                    int clientId = client.getId();
+                    updateClient(clientId, updatedClient);
+                    infoWindow.dispose();
+                }
+            }
+        } catch (Exception e) {
+            view.showError("Ошибка при замене клиента: " + e.getMessage());
+        }
+    }
 
     public void onRefreshButtonClick() {
-        update(clientRep.getKNSortList(1, clientRep.getCount()));
+        update();
     }
 
-    @Override
-    public void update(List<Client> clients) {
-        // Контроллер получает обновленные данные от модели и обновляет представление
-        view.update(clients);
+    public void onNextPageClick() {
+        int totalRecords = clientRep.getCount();
+        int totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
+
+        if (currentPage < totalPages) {
+            currentPage++;
+            update();
+        }
     }
-    
+
+    public void onPrevPageClick() {
+        if (currentPage > 1) {
+            currentPage--;
+            update();
+        }
+    }
+
+    // Реализация метода обновления для наблюдателя (контроллера)
+    @Override
+    public void update() {
+        int totalRecords = clientRep.getCount();
+        int totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
+        int offset = (currentPage - 1) * recordsPerPage;
+        List<Client> clientsToDisplay = clientRep.getKNSortList(currentPage, recordsPerPage);
+        view.update(clientsToDisplay, offset);
+        view.updatePaginationControls(currentPage, totalPages);
+    }
+
 
     public void deleteClient(int clientId) {
         clientRep.deleteById(clientId);
@@ -98,5 +117,11 @@ class ClientController implements ClientObserver {
         } catch (Exception e) {
             view.showError("Ошибка при обновлении клиента: " + e.getMessage());
         }
+    }
+
+    public  boolean isValid(String surname, String name, String patr, int total_services, String phone, String email, String gender) {
+        if(Client.validateS(surname) && Client.validateS(name) && Client.validateS(patr) && Client.validateI(total_services) && Client.validatePhone(phone) && Client.validateEmail(email) && Client.validateS(gender))
+            return true;
+        return false;
     }
 }
