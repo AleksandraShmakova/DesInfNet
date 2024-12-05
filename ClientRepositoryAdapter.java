@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 class ClientRepositoryAdapter implements IClientRepository {
     private List<ClientObserver> observers = new ArrayList<>();
     private ClientRepository clientRepository;
@@ -17,6 +20,7 @@ class ClientRepositoryAdapter implements IClientRepository {
     public void addClient(Client client) throws Exception {
         clientRepository.addClient(client);
         clientRepository.saveAllClients();
+        notifyObservers();
     }
 
     public boolean replaceById(int clientId, Client newClient) throws Exception {
@@ -32,6 +36,7 @@ class ClientRepositoryAdapter implements IClientRepository {
         boolean flag = clientRepository.updateClient(clientId, newClient);
         if(flag) {
             clientRepository.saveAllClients();
+            notifyObservers();
             return true;
         }
         return false;
@@ -40,6 +45,7 @@ class ClientRepositoryAdapter implements IClientRepository {
     public void deleteById(int clientId) {
         clientRepository.deleteById(clientId);
         clientRepository.saveAllClients();
+        notifyObservers();
     }
 
     public int getCount() {
@@ -61,7 +67,7 @@ class ClientRepositoryAdapter implements IClientRepository {
     @Override
     public void notifyObservers() {
         for (ClientObserver observer : observers) {
-            observer.update(clientRepository.readAllClients());
+            observer.update();
         }
     }
 }
