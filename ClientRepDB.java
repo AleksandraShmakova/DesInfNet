@@ -185,7 +185,7 @@ class ClientRepDB implements IClientRepository{
     @Override
     public void notifyObservers() {
         for (ClientObserver observer : observers) {
-            observer.update(getKNSortList(1, getCount()));
+            observer.update();
         }
     }
 }
