@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 
 class ClientFormView extends JFrame {
+    // Поля остаются как есть
     private JTextField nameField;
     private JTextField surnameField;
     private JTextField patronymicField;
@@ -71,7 +72,11 @@ class ClientFormView extends JFrame {
             totalServices = Integer.parseInt(totalServicesField.getText().trim());
         } catch (NumberFormatException ignored) {}
 
-        return new Client(0, name, surname, patronymic, totalServices, phone, email, gender);
+        if(!addController.isValid(surname, name, patronymic, totalServices, phone, email, gender)) {
+            showError("Некорректные данные клиента!");
+            return null;
+        }
+        return new Client(0, surname, name, patronymic, totalServices, phone, email, gender);
     }
 
     public void showError(String message) {
