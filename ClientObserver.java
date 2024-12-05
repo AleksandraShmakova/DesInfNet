@@ -1,3 +1,3 @@
 interface ClientObserver {
-    void update(List<Client> clients);
+    void update();
 }
