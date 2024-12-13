@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<script src="/validation.js"></script>
+    <title>Добавить клиента</title>
+	<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <h1>Добавить клиента</h1>
+    <form action="/add" method="post">
+        <label for="surname">Фамилия:</label>
+        <input type="text" id="surname" name="surname" required><br>
+		<label for="name">Имя:</label>
+        <input type="text" id="name" name="name" required><br>
+		<label for="patronymic">Отчество:</label>
+        <input type="text" id="patronymic" name="patronymic" required><br>
+		<label for="services">Количество стрижек:</label>
+        <input type="text" id="services" name="services" required><br>
+        <label for="phone">Телефон:</label>
+        <input type="text" id="phone" name="phone" required><br>
+        <label for="email">Email:</label>
+		<input type="text" id="email" name="email" required><br>
+        <label for="gender">Пол:</label>
+        <input type="text" id="gender" name="gender" required><br>
+        <button type="submit">Добавить</button>
+		<button type="button" onclick="window.location.href='/'">Отмена</button>
+    </form>
+	
+	<div id="validation-errors" style="display: none;">${validationErrors}</div>
+
+</body>
+</html>
