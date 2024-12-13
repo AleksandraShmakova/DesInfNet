@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Полная информация</title>
+		<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <h1>Детали клиента</h1>
+    <form action="/client/edit" method="post">
+        <input type="hidden" id="id" name="id" value="${id}" required>
+        <label for="surname">Фамилия:</label>
+        <input type="text" id="surname" name="surname" value="${surname}" required><br>
+		<label for="name">Имя:</label>
+        <input type="text" id="name" name="name" value="${name}" required><br>
+		<label for="patronymic">Отчество:</label>
+        <input type="text" id="patronymic" name="patronymic" value="${patronymic}" required><br>
+		<label for="services">Количество стрижек:</label>
+        <input type="text" id="services" name="services" value="${services}" required><br>
+        <label for="phone">Телефон:</label>
+        <input type="text" id="phone" name="phone" value="${phone}" readonly required><br>
+        <label for="email">Email:</label>
+		<input type="text" id="email" name="email" value="${email}" required><br>
+        <label for="gender">Пол:</label>
+        <input type="text" id="gender" name="gender" value="${gender}" required><br>
+        <button type="submit">Обновить</button>
+		<button type="button" onclick="window.location.href='/'">Отмена</button>
+    </form>
+</body>
+</html>
