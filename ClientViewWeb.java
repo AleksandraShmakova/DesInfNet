@@ -7,8 +7,10 @@ import java.util.List;
 
 class ClientViewWeb implements IClientView {
 
+    ClientPresenter presenter;
+
     @Override
-    public String displayClientList(List<Client> clients, int currentPage, int recordsPerPage) {
+    public String update(List<Client> clients, int currentPage, int recordsPerPage, int totalPages) {
         StringBuilder clientTableContent = new StringBuilder();
         int index = (currentPage - 1) * recordsPerPage + 1;
 
@@ -88,7 +90,7 @@ class ClientViewWeb implements IClientView {
             template = template.replace("${surname}", client.getSurname());
             template = template.replace("${name}", client.getName());
             template = template.replace("${patronymic}", client.getPatronymic());
-            template = template.replace("${services}", String.valueOf(client.getServices()));
+            template = template.replace("${services}", String.valueOf(client.getTotal_services()));
             template = template.replace("${phone}", client.getPhone());
             template = template.replace("${email}", client.getEmail());
             template = template.replace("${gender}", client.getGender());
@@ -105,7 +107,7 @@ class ClientViewWeb implements IClientView {
     }
 
     @Override
-    public void showSuccessMessage(String message) {
-        System.out.println("Успех: " + message);
+    public void setPresenter(ClientPresenter presenter) {
+        this.presenter = presenter;
     }
 }
