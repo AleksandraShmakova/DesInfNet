@@ -17,9 +17,14 @@ class ClientPresenter {
         this.currentPage = page;
     }
 
-    public String getClientListPage() throws IOException {
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public String update() throws IOException {
         List<Client> clients = clientRep.getKNSortList(currentPage, recordsPerPage);
-        return view.displayClientList(clients, currentPage, recordsPerPage);
+        int totalPages = (int) Math.ceil((double) clientRep.getCount() / recordsPerPage);
+        return view.update(clients, currentPage, recordsPerPage, totalPages);
     }
 
     public void onAddButtonClick(Client newClient) throws Exception {
@@ -29,8 +34,11 @@ class ClientPresenter {
     public void onDeleteButtonClick(int clientId) {
         try {
             deleteClient(clientId);
+            update();
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Некорректный ID клиента: " + clientId);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -38,21 +46,20 @@ class ClientPresenter {
         try {
             int clientId = updatedClient.getId();
             updateClient(clientId, updatedClient);
+            update();
         } catch (Exception e) {
             throw new IllegalArgumentException("Ошибка при обновлении клиента: " + e.getMessage());
         }
     }
 
-    public String getClientDetailsPage(String query) {
-        int clientId = parseClient(query).getId();
+    public String getClientDetailsPage(int clientId) {
         Client client = clientRep.getById(clientId);
         return view.displayClientDetails(client);
     }
 
     public void addClient(Client newClient) throws Exception {
-        if (isValid(newClient)) {
+        if (isValid(newClient.getSurname(), newClient.getName(), newClient.getPatronymic(), newClient.getTotal_services(), newClient.getPhone(), newClient.getEmail(), newClient.getGender())) {
             clientRep.addClient(newClient);
-            view.showSuccessMessage("Клиент успешно добавлен!");
         } else {
             view.showErrorMessage("Некорректные данные клиента");
         }
@@ -60,72 +67,39 @@ class ClientPresenter {
 
     public void deleteClient(int clientId) {
         clientRep.deleteById(clientId);
-        view.showSuccessMessage("Клиент успешно удален!");
     }
 
     public void updateClient(int clientId, Client updatedClient) throws Exception {
-        if (isValid(updatedClient)) {
+        if (isValid(updatedClient.getSurname(), updatedClient.getName(), updatedClient.getPatronymic(), updatedClient.getTotal_services(), updatedClient.getPhone(), updatedClient.getEmail(), updatedClient.getGender())) {
             clientRep.updateClient(clientId, updatedClient);
-            view.showSuccessMessage("Данные клиента успешно обновлены!");
         } else {
             view.showErrorMessage("Некорректные данные клиента");
         }
     }
 
-    private boolean isValid(Client client) {
-        return Client.validateS(client.getSurname())
-                && Client.validateS(client.getName())
-                && Client.validateS(client.getPatronymic())
-                && Client.validateI(client.getServices())
-                && Client.validatePhone(client.getPhone())
-                && Client.validateEmail(client.getEmail())
-                && Client.validateS(client.getGender());
+    public boolean isValid(String surname, String name, String patronymic, int total_services, String phone, String email, String gender) {
+        return Client.validateS(surname)
+                && Client.validateS(name)
+                && Client.validateS(patronymic)
+                && Client.validateI(total_services)
+                && Client.validatePhone(phone)
+                && Client.validateEmail(email)
+                && Client.validateS(gender);
     }
 
-    public Client parseClient(String requestBody) {
-        Client client = new Client();
-        String[] params = requestBody.split("&");
-
-        for (String param : params) {
-            String[] keyValue = param.split("=");
-            if (keyValue.length == 2) {
-                switch (keyValue[0]) {
-
-                    case "id":
-                        client.setId(Integer.parseInt(keyValue[1]));
-                        break;
-                    case "surname":
-                        client.setSurname(decodeURIComponent(keyValue[1]));
-                        break;
-                    case "name":
-                        client.setName(decodeURIComponent(keyValue[1]));
-                        break;
-                    case "patronymic":
-                        client.setPatronymic(decodeURIComponent(keyValue[1]));
-                        break;
-                    case "services":
-                        client.setServices(Integer.parseInt(keyValue[1]));
-                        break;
-                    case "phone":
-                        client.setPhone(decodeURIComponent(keyValue[1]));
-                        break;
-                    case "email":
-                        client.setEmail(decodeURIComponent(keyValue[1]));
-                        break;
-                    case "gender":
-                        client.setGender(decodeURIComponent(keyValue[1]));
-                        break;
+    public int getClientId(String phone) {
+        try {
+            List<Client> clients = clientRep.getKNSortList(1, clientRep.getCount());
+            for (Client client : clients) {
+                if (client.getPhone().equals(phone)) {
+                    int clientId = client.getId();
+                    return clientId;
                 }
             }
+        } catch (Exception e) {
+            view.showErrorMessage("Ошибка при нахождении id: " + e.getMessage());
         }
-        return client;
+        return -1;
     }
 
-    private String decodeURIComponent(String value) {
-        try {
-            return java.net.URLDecoder.decode(value, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return value;
-        }
-    }
 }
